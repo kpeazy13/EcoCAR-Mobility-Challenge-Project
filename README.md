@@ -1,6 +1,6 @@
 # EcoCAR honk detection
 
-Binary audio classification on NVIDIA Jetson Orin, with Raspberry Pi seat feedback and a tablet display. **No trained detector is supplied:** labeled recordings and vehicle validation are still needed. The demo exercises notifications using synthetic messages; it does not demonstrate recognition accuracy.
+Binary audio classification on NVIDIA Jetson Orin, with Raspberry Pi seat feedback and a tablet display. 
 
 ```text
 Microphone → Jetson: 16 kHz mono → 1 s waveform → log-mel CNN
