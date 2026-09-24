@@ -1,0 +1,7 @@
+path,label,split,group
+../data/train_honk.wav,1,train,drive_001
+../data/train_road.wav,0,train,drive_002
+../data/val_honk.wav,1,val,drive_003
+../data/val_road.wav,0,val,drive_004
+../data/test_honk.wav,1,test,drive_005
+../data/test_road.wav,0,test,drive_006

@@ -1,0 +1,22 @@
+[Unit]
+Description=EcoCAR Pi notification service
+After=network-online.target time-sync.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ecocar
+SupplementaryGroups=gpio
+WorkingDirectory=/opt/ecocar
+EnvironmentFile=/etc/ecocar.env
+# Dry run by default. Add --hardware after driver wiring is verified.
+ExecStart=/opt/ecocar/.venv/bin/python -m ecocar.pi --pins 17,27
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

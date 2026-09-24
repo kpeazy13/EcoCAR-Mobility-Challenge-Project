@@ -1,0 +1,21 @@
+[Unit]
+Description=EcoCAR Jetson honk detector
+After=network-online.target time-sync.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ecocar
+SupplementaryGroups=audio video render
+WorkingDirectory=/opt/ecocar
+EnvironmentFile=/etc/ecocar.env
+ExecStart=/opt/ecocar/.venv/bin/python -m ecocar.jetson --model /opt/ecocar/artifacts/honk.pt --pi ${ECOCAR_PI_HOST}
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

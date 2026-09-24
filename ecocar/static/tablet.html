@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EcoCAR · Driver awareness</title>
+<style>
+  :root { color-scheme:dark; font-family:system-ui,sans-serif; }
+  body { margin:0; background:#101b25; color:#eff5f8; min-height:100vh; display:grid; place-items:center; }
+  main { width:min(90vw,850px); }
+  header { display:flex; justify-content:space-between; gap:1rem; color:#a9becb; font-size:1rem; }
+  #panel { margin:2rem 0; padding:3rem 2rem; border:2px solid #496374; border-radius:24px; min-height:240px; display:flex; flex-direction:column; justify-content:center; }
+  h1 { font-size:clamp(2.5rem,7vw,5rem); margin:0; letter-spacing:-.04em; }
+  p { font-size:1.3rem; line-height:1.5; }
+  .honk { background:#ffd275; color:#1c1a12; border-color:#ffd275 !important; }
+  .ready { border-color:#60c6ac !important; }
+  footer { color:#a9becb; font-size:.95rem; }
+</style>
+<main>
+  <header><strong>ECOCAR / DRIVER AWARENESS</strong><span id="connection">Connecting</span></header>
+  <section id="panel" role="status" aria-live="polite">
+    <h1 id="title">System unavailable</h1>
+    <p id="detail">Waiting for the detection system.</p>
+  </section>
+  <footer>Honk awareness assistant · Remain attentive to surrounding traffic.</footer>
+</main>
+<script>
+const panel = document.querySelector('#panel');
+const title = document.querySelector('#title');
+const detail = document.querySelector('#detail');
+const connection = document.querySelector('#connection');
+function display(mode, heading, text, link) {
+  panel.className = mode;
+  title.textContent = heading;
+  detail.textContent = text;
+  connection.textContent = link;
+}
+async function update() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 1200);
+  try {
+    const response = await fetch('/api/status', {cache:'no-store', signal:controller.signal});
+    if (!response.ok) throw new Error('Status unavailable');
+    const s = await response.json();
+    if (!s.connected) display('', 'System unavailable', 'No connection to the audio detector.', 'Detector offline');
+    else if (!s.healthy) display('', 'Audio unavailable', 'The detector is starting or the microphone needs attention.', 'Check detector');
+    else if (s.honk) display('honk', 'Honk detected', s.haptic_fault ? 'Be aware of nearby traffic. Seat feedback is unavailable.' : 'Be aware of nearby traffic.', 'Live');
+    else if (s.haptic_fault) display('', 'Seat feedback unavailable', 'Visual honk alerts remain active.', 'Service required');
+    else display('ready', 'Listening', 'Honk alerts will appear here.', 'Live');
+  } catch (_) {
+    display('', 'System unavailable', 'The tablet cannot reach the notification system.', 'Tablet disconnected');
+  } finally {
+    clearTimeout(timer);
+    setTimeout(update, 200);
+  }
+}
+update();
+</script>
+</html>
